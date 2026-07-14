@@ -1,4 +1,13 @@
 # Tüm servislerin ortak baz konfigürasyonu (config-server tarafından servis edilir)
+
+# MVP basitleştirmesi: paylaşılan HS256 secret'ı config-repo'da tutuyoruz.
+# Faz 8'de K8s Secret/Vault'a taşınacak (SR-05 emsal pattern).
+telcox:
+  jwt:
+    secret: GKcxLMdui5n/4mjjQY0fXR8RuuXkY7LgCLg8PGXxZeo=
+    access-token-ttl-seconds: 900
+    refresh-token-ttl-seconds: 604800
+
 management:
   endpoints:
     web:

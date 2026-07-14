@@ -5,7 +5,34 @@ server:
 spring:
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            - id: identity-service-auth
+              uri: lb://IDENTITY-SERVICE
+              predicates:
+                - Path=/api/v1/auth/**
+            - id: identity-service-users
+              uri: lb://IDENTITY-SERVICE
+              predicates:
+                - Path=/api/v1/users/**
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+telcox:
+  gateway:
+    rate-limit:
+      requests-per-minute: 100
+    public-paths:
+      - /api/v1/auth/**
+      - /actuator/**
+      - /eureka/**
+      - /*/v3/api-docs/**
+      - /*/swagger-ui/**
+      - /*/swagger-ui.html

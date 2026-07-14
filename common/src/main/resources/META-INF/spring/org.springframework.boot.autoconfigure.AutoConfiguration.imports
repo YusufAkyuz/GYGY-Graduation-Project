@@ -1,1 +1,2 @@
 com.telcox.common.web.CommonWebAutoConfiguration
+com.telcox.common.security.CommonSecurityAutoConfiguration
