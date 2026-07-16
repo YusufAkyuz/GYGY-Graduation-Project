@@ -1,15 +1,14 @@
 package com.telcox.common.audit;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import com.telcox.common.jpa.CommonJpaAutoConfiguration;
 
 @AutoConfiguration
+@AutoConfigureAfter(CommonJpaAutoConfiguration.class)
 @ConditionalOnClass(jakarta.persistence.Entity.class)
-@EntityScan(basePackageClasses = AuditLogEntry.class)
-@EnableJpaRepositories(basePackageClasses = AuditLogEntryRepository.class)
 public class AuditAutoConfiguration {
 
     @Bean

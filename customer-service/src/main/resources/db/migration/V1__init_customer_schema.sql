@@ -3,7 +3,7 @@ CREATE TABLE customers (
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     tckn_encrypted VARCHAR(512) NOT NULL,
-    tckn_hash CHAR(64) NOT NULL UNIQUE,
+    tckn_hash VARCHAR(64) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     phone VARCHAR(30) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
