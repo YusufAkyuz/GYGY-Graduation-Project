@@ -2,6 +2,7 @@ package com.telcox.apigateway.filter;
 
 import com.telcox.apigateway.config.GatewaySecurityProperties;
 import com.telcox.apigateway.config.JwtProperties;
+import com.telcox.apigateway.config.PublicPathRule;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -41,7 +42,7 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
     private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
     private final SecretKey signingKey;
-    private final List<String> publicPaths;
+    private final List<PublicPathRule> publicPaths;
 
     public JwtAuthenticationGlobalFilter(JwtProperties jwtProperties, GatewaySecurityProperties securityProperties) {
         this.signingKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtProperties.getSecret()));
@@ -52,6 +53,7 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
+        String method = request.getMethod().name();
 
         ServerHttpRequest.Builder mutatedRequestBuilder = request.mutate()
                 .headers(headers -> {
@@ -59,7 +61,7 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
                     headers.remove(USER_ROLES_HEADER);
                 });
 
-        if (isPublicPath(path)) {
+        if (isPublicPath(path, method)) {
             return chain.filter(exchange.mutate().request(mutatedRequestBuilder.build()).build());
         }
 
@@ -93,8 +95,10 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
         return chain.filter(exchange.mutate().request(mutatedRequest).build());
     }
 
-    private boolean isPublicPath(String path) {
-        return publicPaths.stream().anyMatch(pattern -> PATH_MATCHER.match(pattern, path));
+    private boolean isPublicPath(String path, String method) {
+        return publicPaths.stream().anyMatch(rule ->
+                PATH_MATCHER.match(rule.getPattern(), path)
+                        && (!StringUtils.hasText(rule.getMethod()) || rule.getMethod().equalsIgnoreCase(method)));
     }
 
     private Mono<Void> unauthorized(ServerWebExchange exchange, String detail) {

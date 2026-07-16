@@ -20,6 +20,14 @@ spring:
               uri: lb://IDENTITY-SERVICE
               predicates:
                 - Path=/api/v1/users/**
+            - id: customer-service
+              uri: lb://CUSTOMER-SERVICE
+              predicates:
+                - Path=/api/v1/customers/**
+            - id: product-catalog-service
+              uri: lb://PRODUCT-CATALOG-SERVICE
+              predicates:
+                - Path=/api/v1/products/**
   data:
     redis:
       host: localhost
@@ -30,9 +38,13 @@ telcox:
     rate-limit:
       requests-per-minute: 100
     public-paths:
-      - /api/v1/auth/**
-      - /actuator/**
-      - /eureka/**
-      - /*/v3/api-docs/**
-      - /*/swagger-ui/**
-      - /*/swagger-ui.html
+      - pattern: /api/v1/auth/**
+      - pattern: /actuator/**
+      - pattern: /eureka/**
+      - pattern: /*/v3/api-docs/**
+      - pattern: /*/swagger-ui/**
+      - pattern: /*/swagger-ui.html
+      - pattern: /api/v1/customers
+        method: POST
+      - pattern: /api/v1/products/**
+        method: GET

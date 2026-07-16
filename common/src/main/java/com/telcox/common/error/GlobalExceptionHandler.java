@@ -4,6 +4,8 @@ import com.telcox.common.web.CorrelationIdHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,6 +46,30 @@ public class GlobalExceptionHandler {
                 fieldErrors
         );
         return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
+        ErrorResponse body = ErrorResponse.of(
+                "Forbidden",
+                HttpStatus.FORBIDDEN.value(),
+                "Bu işlem için yetkiniz yok",
+                request.getRequestURI(),
+                CorrelationIdHolder.get()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
+        ErrorResponse body = ErrorResponse.of(
+                "Unauthorized",
+                HttpStatus.UNAUTHORIZED.value(),
+                "Kimlik doğrulama gerekli",
+                request.getRequestURI(),
+                CorrelationIdHolder.get()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
     @ExceptionHandler(Exception.class)

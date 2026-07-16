@@ -7,14 +7,14 @@ import java.util.List;
 @ConfigurationProperties(prefix = "telcox.gateway")
 public class GatewaySecurityProperties {
 
-    /** JWT doğrulaması yapılmadan geçilecek Ant-style path'ler (SR-02). */
-    private List<String> publicPaths = List.of();
+    /** JWT doğrulaması yapılmadan geçilecek path (+ opsiyonel method) kuralları (SR-02). */
+    private List<PublicPathRule> publicPaths = List.of();
 
-    public List<String> getPublicPaths() {
+    public List<PublicPathRule> getPublicPaths() {
         return publicPaths;
     }
 
-    public void setPublicPaths(List<String> publicPaths) {
+    public void setPublicPaths(List<PublicPathRule> publicPaths) {
         this.publicPaths = publicPaths;
     }
 }
