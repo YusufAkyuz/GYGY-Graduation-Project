@@ -1,2 +1,5 @@
 com.telcox.common.web.CommonWebAutoConfiguration
 com.telcox.common.security.CommonSecurityAutoConfiguration
+com.telcox.common.outbox.OutboxAutoConfiguration
+com.telcox.common.audit.AuditAutoConfiguration
+com.telcox.common.security.pii.PiiEncryptionAutoConfiguration

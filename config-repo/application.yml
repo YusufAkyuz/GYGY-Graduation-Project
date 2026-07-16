@@ -7,6 +7,17 @@ telcox:
     secret: GKcxLMdui5n/4mjjQY0fXR8RuuXkY7LgCLg8PGXxZeo=
     access-token-ttl-seconds: 900
     refresh-token-ttl-seconds: 604800
+  security:
+    pii-encryption-key: eZumgKAnokiq2AjJE3MyqDd5ZFaDlEGoDGR+M3P/Ksw=
+  outbox:
+    poll-interval-ms: 2000
+
+spring:
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 management:
   endpoints:
