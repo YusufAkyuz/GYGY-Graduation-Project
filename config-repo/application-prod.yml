@@ -1,0 +1,7 @@
+# Prod/K8s profili: JSON yapılandırılmış loglama (NFR-08). ELK/Loki gibi log toplayıcılar
+# stdout'tan doğrudan bu formatı parse edebilir. Yerel geliştirmede okunabilirlik için
+# varsayılan (prod olmayan) profilde düz metin formatı korunur.
+logging:
+  structured:
+    format:
+      console: ecs

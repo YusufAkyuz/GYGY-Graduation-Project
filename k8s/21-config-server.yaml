@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-server
+  namespace: telco-crm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-server
+  template:
+    metadata:
+      labels:
+        app: config-server
+    spec:
+      containers:
+        - name: config-server
+          image: telcox/config-server:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8888
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom: {configMapKeyRef: {name: telcox-common-config, key: SPRING_PROFILES_ACTIVE}}
+            - name: CONFIG_REPO_PATH
+              value: "/config-repo"
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              valueFrom: {configMapKeyRef: {name: telcox-common-config, key: EUREKA_SERVICE_URL}}
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              valueFrom: {configMapKeyRef: {name: telcox-common-config, key: KAFKA_BOOTSTRAP_SERVERS}}
+            - name: MANAGEMENT_ZIPKIN_TRACING_ENDPOINT
+              valueFrom: {configMapKeyRef: {name: telcox-common-config, key: ZIPKIN_ENDPOINT}}
+            - name: TELCOX_JWT_SECRET
+              valueFrom: {secretKeyRef: {name: telcox-secrets, key: JWT_SECRET}}
+            - name: TELCOX_SECURITY_PIIENCRYPTIONKEY
+              valueFrom: {secretKeyRef: {name: telcox-secrets, key: PII_ENCRYPTION_KEY}}
+          readinessProbe:
+            httpGet: {path: /actuator/health, port: 8888}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /actuator/health, port: 8888}
+            initialDelaySeconds: 45
+            periodSeconds: 15
+          resources:
+            requests: {cpu: 200m, memory: 384Mi}
+            limits: {cpu: "1", memory: 768Mi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: config-server
+  namespace: telco-crm
+spec:
+  selector:
+    app: config-server
+  ports:
+    - port: 8888
+      targetPort: 8888
+  

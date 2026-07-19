@@ -3,10 +3,13 @@ package com.telcox.subscriptionservice.service;
 import com.telcox.common.error.ApiException;
 import com.telcox.common.outbox.OutboxEventPublisherService;
 import com.telcox.subscriptionservice.domain.Subscription;
+import com.telcox.subscriptionservice.domain.SubscriptionStatus;
 import com.telcox.subscriptionservice.event.PaymentCompletedEvent;
 import com.telcox.subscriptionservice.event.SubscriptionActivatedEvent;
 import com.telcox.subscriptionservice.repository.MsisdnPoolRepository;
 import com.telcox.subscriptionservice.repository.SubscriptionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,5 +51,10 @@ public class SubscriptionService {
     public Subscription getByOrderId(java.util.UUID orderId) {
         return subscriptionRepository.findByOrderId(orderId)
                 .orElseThrow(() -> ApiException.notFound("Bu sipariş için abonelik bulunamadı: " + orderId));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Subscription> listActive(Pageable pageable) {
+        return subscriptionRepository.findAllByStatus(SubscriptionStatus.ACTIVE, pageable);
     }
 }

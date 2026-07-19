@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build & unit test
+        run: ./mvnw -B -q clean install
+
+  docker-build:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        service:
+          - discovery-server
+          - config-server
+          - api-gateway
+          - identity-service
+          - customer-service
+          - product-catalog-service
+          - order-service
+          - payment-service
+          - subscription-service
+          - usage-service
+          - billing-service
+          - notification-service
+          - ticket-service
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build jar (module + bağımlılıkları)
+        run: ./mvnw -B -q -pl ${{ matrix.service }} -am install -DskipTests
+
+      - name: Build Docker image
+        run: docker build -f ${{ matrix.service }}/Dockerfile -t telcox/${{ matrix.service }}:${{ github.sha }} .
+
+      # NOT: Bu MVP pipeline'ında imaj push adımı bilinçli olarak eklenmedi; gerçek bir
+      # registry ve secret yönetimi kurulduğunda `docker push` + `kubectl apply` adımları
+      # buraya eklenir (bkz. Faz 8 k8s/ manifestleri).

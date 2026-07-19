@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telcox-common-config
+  namespace: telco-crm
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  EUREKA_SERVICE_URL: "http://discovery-server:8761/eureka/"
+  CONFIG_SERVER_URL: "http://config-server:8888"
+  KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+  ZIPKIN_ENDPOINT: "http://zipkin:9411/api/v2/spans"
+  REDIS_HOST: "redis"
+  POSTGRES_HOST: "postgres"

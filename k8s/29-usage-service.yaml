@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: usage-service
+  namespace: telco-crm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: usage-service
+  template:
+    metadata:
+      labels:
+        app: usage-service
+    spec:
+      containers:
+        - name: usage-service
+          image: telcox/usage-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9006
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom: {configMapKeyRef: {name: telcox-common-config, key: SPRING_PROFILES_ACTIVE}}
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configserver:http://config-server:8888"
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              valueFrom: {configMapKeyRef: {name: telcox-common-config, key: EUREKA_SERVICE_URL}}
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              valueFrom: {configMapKeyRef: {name: telcox-common-config, key: KAFKA_BOOTSTRAP_SERVERS}}
+            - name: MANAGEMENT_ZIPKIN_TRACING_ENDPOINT
+              valueFrom: {configMapKeyRef: {name: telcox-common-config, key: ZIPKIN_ENDPOINT}}
+            - name: TELCOX_JWT_SECRET
+              valueFrom: {secretKeyRef: {name: telcox-secrets, key: JWT_SECRET}}
+            - name: TELCOX_SECURITY_PIIENCRYPTIONKEY
+              valueFrom: {secretKeyRef: {name: telcox-secrets, key: PII_ENCRYPTION_KEY}}
+
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres:5432/usage_db"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "telcox"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom: {secretKeyRef: {name: telcox-secrets, key: POSTGRES_PASSWORD}}
+          readinessProbe:
+            httpGet: {path: /actuator/health, port: 9006}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /actuator/health, port: 9006}
+            initialDelaySeconds: 45
+            periodSeconds: 15
+          resources:
+            requests: {cpu: 200m, memory: 384Mi}
+            limits: {cpu: "1", memory: 768Mi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: usage-service
+  namespace: telco-crm
+spec:
+  selector:
+    app: usage-service
+  ports:
+    - port: 9006
+      targetPort: 9006
+  
