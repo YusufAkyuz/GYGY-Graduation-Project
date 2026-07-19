@@ -1,5 +1,6 @@
 com.telcox.common.jpa.CommonJpaAutoConfiguration
 com.telcox.common.web.CommonWebAutoConfiguration
+com.telcox.common.web.CommonJacksonAutoConfiguration
 com.telcox.common.security.CommonSecurityAutoConfiguration
 com.telcox.common.outbox.OutboxAutoConfiguration
 com.telcox.common.audit.AuditAutoConfiguration

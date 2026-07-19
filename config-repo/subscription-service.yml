@@ -1,0 +1,25 @@
+# subscription-service'e özel konfigürasyon
+server:
+  port: 9005
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/subscription_db
+    username: telcox
+    password: telcox
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+  kafka:
+    consumer:
+      group-id: subscription-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

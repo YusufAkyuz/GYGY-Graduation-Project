@@ -30,6 +30,9 @@
         <module>identity-service</module>
         <module>customer-service</module>
         <module>product-catalog-service</module>
+        <module>order-service</module>
+        <module>payment-service</module>
+        <module>subscription-service</module>
     </modules>
 
     <dependencyManagement>

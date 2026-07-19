@@ -28,6 +28,18 @@ spring:
               uri: lb://PRODUCT-CATALOG-SERVICE
               predicates:
                 - Path=/api/v1/products/**
+            - id: order-service
+              uri: lb://ORDER-SERVICE
+              predicates:
+                - Path=/api/v1/orders/**
+            - id: payment-service
+              uri: lb://PAYMENT-SERVICE
+              predicates:
+                - Path=/api/v1/payments/**
+            - id: subscription-service
+              uri: lb://SUBSCRIPTION-SERVICE
+              predicates:
+                - Path=/api/v1/subscriptions/**
   data:
     redis:
       host: localhost
